@@ -1,0 +1,342 @@
+<?php
+if(is_page( $page = '2' )) 
+{ 
+get_template_part( 'header/header-1' );
+echo "<Style>.elementor-shortcode{display:none;}</Style>";
+}
+if(is_page( $page='2')) 
+{ 
+ get_template_part( 'footer-1' );
+}
+
+if(wp_is_mobile() || is_front_page()  || is_page( $page = 'sample-page' ) || is_page( $page = 'vin-details' )  || is_page( $page = 'about-us' )) 
+{ 
+echo "<Style>@media only (min-width:750px){.row{padding-left:150px;} }</Style>";
+echo "<Style>table tr td{width:200px;padding:10px;} table tr{border-bottom:1px solid #fff;}</Style>";
+echo "<center>";
+if(wp_is_mobile())
+		{
+echo "<form style='padding-top:20px;' action='https://gk-parts.co/vin-details/' method='post' id='vinsearchform' name='vinsearchform'>
+<label>أدخل رقم VIN</label>
+<input name='vinno' id='vinno' type='text'  style='width:73%;' placeholder='أدخل رقم VIN لسيارتك...'>
+<input type='submit'  style='padding-left:10px;width:23%;background:#7a303e;color:whitel;border:#lightblue;' value='يبحث' name='search' id='search'>
+</form>";
+	}
+if(wp_is_mobile()==false)
+		{
+echo "<form style='padding-top:20px;' action='https://gk-parts.co/vin-details/' method='post' id='vinsearchform' name='vinsearchform'>
+<label>أدخل رقم VIN</label>
+<input name='vinno' id='vinno' type='text'  style='width:35%;' placeholder='أدخل رقم VIN لسيارتك...'>
+<input type='submit'  style='background:#7a303e;color:whitel;border:#lightblue;' value='يبحث' name='search' id='search'>
+</form>";
+	}
+
+if(is_page( $page = '2' ))
+{ 
+if (isset($_POST['search']))
+{
+$vinno=$_POST['vinno'];
+$serviceurl="https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/".$vinno."?format=json";
+echo $serviceurl;
+				$json_data = file_get_contents($serviceurl);
+				echo $json_data;
+$response_data = json_decode($json_data);
+                                $response_data_1=$response_data;
+for ($i=0;$i<sizeof($response_data->Results);$i++)
+	{
+echo $response_data->Results[$i]->Variable;
+                  if ($response_data->Results[$i]->Variable=="Make")
+		    {       
+			  $make=$response_data->Results[$i]->Value;
+	           } 
+	}
+if ($make=="")
+{
+echo "<Table border=1 style='width:70%; '>";
+echo "<tr><td  colspan=4 style='text-align:center;background-color:#7a303e;;color:#fff;'>نحن نوفر لك: لا يوجد منتج متاح ولكن يمكننا الحصول عليه لك.</td></tr>";
+echo "</table>";
+echo "<iframe src='https://gk-parts.co/vin-not-found-1' frameborder='0' scrolling='no' style='border: none; width: 100%; height: 400vh;'></iframe>";
+exit;
+}
+
+if(wp_is_mobile()==false)
+		{
+
+				echo "<Table border=1 style='width:60%; '>";
+						for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+						  if ($response_data->Results[$i]->Variable=="Model Year")
+					{       
+					  $year=$response_data->Results[$i]->Value;
+					   } 
+		}
+		for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+						  if ($response_data->Results[$i]->Variable=="Make")
+					{       
+					  $make=$response_data->Results[$i]->Value;
+					   } 
+		}
+					   for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					
+			   if ($response_data->Results[$i]->Variable=="Model")
+					{       
+					  $model=$response_data->Results[$i]->Value;
+					   }
+		} 
+					   echo "<tr><td  colspan=4 style='text-align:center;background-color:#7a303e;color:#fff;'>".$year." ".$make." ",$model."</td></tr>";
+					   echo "</table>";
+		
+
+				echo "<Table border=1 style='width:60%; '>";
+						echo "<tr><td>VIN:<br/><b>".$vinno."</b></td>";
+						for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+						  if ($response_data->Results[$i]->Variable=="Make")
+					{       
+					  $make=$response_data->Results[$i]->Value;
+							  echo "<td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td>";
+				   } 
+		}
+					   for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					
+			   if ($response_data->Results[$i]->Variable=="Model")
+					{       
+					  $model=$response_data->Results[$i]->Value;
+							  echo "<td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td>";
+				   }
+		} 
+						for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+		 
+					   if ($response_data->Results[$i]->Variable=="Model Year")
+					{       
+					  $year=$response_data->Results[$i]->Value;
+							  echo  "<td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td>";
+				   }
+		} 
+						for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+							 if ($response_data->Results[$i]->Variable=="Drive Type")
+					{       
+					  $drivetype=$response_data->Results[$i]->Value;
+							  echo  "<td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td></tr>";
+				   }
+		 }
+					   for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+						if ($response_data->Results[$i]->Variable=="Body Class")
+					{       
+					  $body=$response_data->Results[$i]->Value;
+							  echo "<tr><td>".$response_data->Results[$i]->Variable.":<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td><td>";
+				   }
+		}
+					   for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+			 if ($response_data->Results[$i]->Variable=="Engine Model")
+					{       
+					  $engine=$response_data->Results[$i]->Value;
+							  echo $response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td><td colspan=2>";
+				   }
+		}
+					   for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+		 if ($response_data->Results[$i]->Variable=="Manufacturer Name")
+					{       
+					  $manufacturer=$response_data->Results[$i]->Value;
+							  echo $response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+						  echo "</td><td>عمر: <br/><b>".(2023-intval($year))." Years</b></td>";
+								  echo "</tr>";
+								  }
+		}
+		echo "</Table>";
+		}
+
+		if(wp_is_mobile())
+		{
+				echo "<Table border=1 style='width:100%; '>";
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+						  if ($response_data->Results[$i]->Variable=="Model Year")
+					{       
+					  $year=$response_data->Results[$i]->Value;
+					   } 
+				}
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+						  if ($response_data->Results[$i]->Variable=="Make")
+					{       
+					  $make=$response_data->Results[$i]->Value;
+					   } 
+				}
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					
+					if ($response_data->Results[$i]->Variable=="Model")
+					{       
+					  $model=$response_data->Results[$i]->Value;
+					   }
+				} 
+					   echo "<tr><td  colspan=4 style='text-align:center;background-color:#7a303e;color:#fff;'>".$year." ".$make." ",$model."</td></tr>";
+					   echo "</table>";
+				
+				echo "<Table border=1 style='width:100%; '>";
+				echo "<tr><td>VIN:<br/><b>".$vinno."</b></td></tr>";
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					if ($response_data->Results[$i]->Variable=="Make")
+					{       
+					  $make=$response_data->Results[$i]->Value;
+					  echo "<tr><td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td></tr>";
+				   } 
+				}
+			   for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					if ($response_data->Results[$i]->Variable=="Model")
+					{       
+					  $model=$response_data->Results[$i]->Value;
+					  echo "<tr><td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td></tr>";
+				   }
+				} 
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+		 		   if ($response_data->Results[$i]->Variable=="Model Year")
+					{       
+					  $year=$response_data->Results[$i]->Value;
+					  echo  "<tr><td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td></tr>";
+				   }
+				} 
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					if ($response_data->Results[$i]->Variable=="")
+					{       
+					  $drivetype=$response_data->Results[$i]->Value;
+					  echo  "<tr><td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td></tr>";
+				   }
+				}
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					if ($response_data->Results[$i]->Variable=="Engine Model")
+					{       
+					  $body=$response_data->Results[$i]->Value;
+					  echo "<tr><td>".$response_data->Results[$i]->Variable.":<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td></tr>";
+				   }
+				}
+			   for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					if ($response_data->Results[$i]->Variable=="Manufacturer Name")
+					{       
+					  $engine=$response_data->Results[$i]->Value;
+					  echo "<tr><td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td></tr>";
+				   }
+				}
+				for ($i=0;$i<sizeof($response_data->Results);$i++)
+				{
+					if ($response_data->Results[$i]->Variable=="Manufacturer Name")
+					{       
+					  $manufacturer=$response_data->Results[$i]->Value;
+					  echo "<tr><td>".$response_data->Results[$i]->Variable."<br/>";
+					  echo "<b>".$response_data->Results[$i]->Value."</b>";
+					  echo "</td><tr><td>عمر: <br/><b>".(2023-intval($year))." سنين</b></td>";
+					  echo "</tr>";
+					}
+				}
+		echo "</Table>";
+		}
+		
+		
+		
+		
+}
+
+
+ $category=ucwords($make." ".$model);
+if (isset($vinno))
+{
+$query="select * from gkparts_posts where post_title like '%".$category."%' and post_status='publish' "; 
+$loop=$wpdb->get_results ($query);
+global $product;
+if(wp_is_mobile())
+		{
+echo "<Table style='width:100%; '>";
+echo "<tr><td style='text-align:center;color:#fff;background-color:#7a303e;;width:60%;'>أخبار رائعة: هناك منتجات متاحة لسيارتك.</h4></td></tr>";
+echo "<tr><td c>المنتجات المتاحة لسيارتك ".$category."</td></tr>";
+echo "</table>";
+
+		}
+if(wp_is_mobile()==false)
+		{
+
+echo "<Table style='width:60%; '>";
+echo "<tr><td style='text-align:center;color:#fff;background-color:#7a303e;;width:60%;'>أخبار رائعة: هناك منتجات متاحة لسيارتك.</h4></td></tr>";
+echo "<tr><td c>المنتجات المتاحة لسيارتك ".$category."</td></tr>";
+echo "</table>";
+}
+echo "<div class='row justify-content-center'>";
+for ($i=0;$i<=sizeof($loop);$i++)
+{
+$post_id=$loop[$i]->ID;
+$post_title=$loop[$i]->post_title;
+$product = wc_get_product($post_id);
+$productid=$product->get_id();
+$regularprice=$product->get_regular_price();
+$saleprice=$product->get_sale_price();
+$imageid=$product->get_image_id();
+$imageurl=wp_get_attachment_image_url($imageid);
+$permalink=get_permalink($post_id);
+echo "<div class='col-md-4 col-sm-4 mx-auto' style='padding-left:30px; padding-right:30px; padding-top:30px;padding-bottom:20px; border:1px solid lightgrey;background-color:#fff;'>";
+echo "<div class='card' style='width:18rem;'>";
+echo "<div class='card-body'>";
+echo "<a href='$permalink' data-id='$permalink' ><img style='border-radius:15px;' src='$imageurl'/></a>.<br/>"; 
+echo "<h5 class='card-title'>$post_title</h5>";
+$cs=get_woocommerce_currency_symbol();
+echo "<p class='card-text' ><s style='color:red;'>".$cs.$regularprice."</s>  ".$cs.$saleprice ."</p>";
+echo apply_filters(
+                                'woocommerce_loop_add_to_cart_link',
+                                sprintf(
+                                    '<a href="%s" style="border-radius:30px;background-color:#000;" rel="nofollow" data-product_id="%s" data-product_sku="%s" class="button %s product_type_%s">%s</a>',
+                                    esc_url( $product->add_to_cart_url() ),
+                                    esc_attr( $product->get_id() ),
+                                    esc_attr( $product->get_sku() ),
+                                    $product->is_purchasable() ? 'add_to_cart_button' : '',
+                                    esc_attr( $product->product_type ),
+                                    esc_html( $product->add_to_cart_text() )
+                                ),
+                                $product
+                            );echo "</div>";
+echo "</div>";
+echo "</div>";
+}
+echo "</div>";
+}
+}
+}
+ 
+?>
